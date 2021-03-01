@@ -12,8 +12,8 @@ public class AutonomousDrive {
         rightFront = RobotMap.rightFrontEncoder;
         leftBack = RobotMap.leftBackEncoder;
         rightBack = RobotMap.rightBackEncoder;
-        encoderCountsPerInch = 2; //insert real number here
-        encoderCountsPer360 = 10; //insert real number here
+        encoderCountsPerInch = 0.27; 
+        encoderCountsPer360 = 20.8;
         
     }
     public void printState() {
