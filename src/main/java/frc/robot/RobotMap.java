@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class RobotMap {
     public static final Joystick driveJoystick = new Joystick(0);
@@ -25,6 +26,7 @@ public class RobotMap {
     public static final CANEncoder rightBackEncoder = new CANEncoder(rightBack, EncoderType.kQuadrature, 42);
 
     public static final Servo pixyServo = new Servo(3); //needs actual port number
-
+    
+    public static final Ultrasonic ultrasonic = new Ultrasonic(1,2); //needs a home in the form of a port number
 
 }
