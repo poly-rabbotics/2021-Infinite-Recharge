@@ -47,6 +47,11 @@ repositories {
 }
 dependencies {
     implementation 'pw.otake.pseudoresonance:pixy2-java-api:1.4.1'
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a06d90e56cc41bf108abdcba9006b3a2da3663cb
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
@@ -61,6 +66,7 @@ dependencies {
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+<<<<<<< HEAD
     simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
 
     // Websocket extensions require additional configuration.
@@ -72,6 +78,8 @@ dependencies {
 sim {
     // Sets the websocket client remote host.
     // envVar "HALSIMWS_HOST", "10.0.0.2"
+=======
+>>>>>>> a06d90e56cc41bf108abdcba9006b3a2da3663cb
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
