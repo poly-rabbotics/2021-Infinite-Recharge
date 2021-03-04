@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.subsystems.AutonomousDrive;
-import frc.robot.subsystems.Drive;
 
 import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC;
@@ -27,10 +27,12 @@ public class GalacticSearch{
 private SpeedControllerGroup left,right;
 public DifferentialDrive drive;
 TurnByDegrees turnbydegrees;
+private Ultrasonic ultrasonic;
+
 boolean coarseAngleFound, fineAngleFound, ballFound, startGalactic, startTurn, cameraCentered;
 Servo servo;
 int sweepDirection, count;
-double offsetAngle, servoAngle, initialPosition, rotationAngle, distanceInInches;
+double offsetAngle, servoAngle, initialPosition, rotationAngle, distance;
 private static Pixy2 pixy;
 public static int blockCount;
 
@@ -48,7 +50,7 @@ public GalacticSearch(){
 
 left = new SpeedControllerGroup(RobotMap.leftFront, RobotMap.leftBack);
 right = new SpeedControllerGroup(RobotMap.rightFront, RobotMap.rightBack);
-Drive drive = new Drive();
+ultrasonic = RobotMap.ultrasonic;
 
 coarseAngleFound = false;
 fineAngleFound = false;
@@ -58,7 +60,6 @@ cameraCentered = false;
 
 sweepDirection = 1;
 initialPosition = 0;
-distanceInInches = 0.0;
 rotationAngle = 0.0;
 turnbydegrees = new TurnByDegrees();
 servo = RobotMap.pixyServo;
@@ -153,10 +154,12 @@ else if (largestBlock.getY >= -5 && largestBlock.getX <= 5){
 
 
 //Mode Four drives robot forward x amount of distance
-public void modeFour(double distance){
+public void modeFour(){
     //distance is determined by ultrasonic
-distance = distanceInInches;
-    AutnomousDrive.DriveByDistance(distance);
+
+    distance = ultrasonic.getRangeInches();
+    AutonomousDrive.DriveByDistance(distance);
+    
 
     
 
@@ -172,14 +175,15 @@ public void modeFive(){
 }
 //mode six drives to the end zone
 public void modeSix(){
-
-//run set amount of distance using encoder values
-}
-//mode seven ends the run
-public void EndRun(){
+//robot needs to turn towards the end zone 
+distance = ultrasonic.getRangeInches();
+AutonomousDrive.DriveByDistance(distance);
+if(distance <= 0){
 left.stopMotor();
 right.stopMotor();
 }
+}
+
 
 public void run(){
 
