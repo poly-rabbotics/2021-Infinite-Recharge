@@ -4,8 +4,8 @@ import com.revrobotics.CANEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutonomousDrive {
-    public CANEncoder leftFront, rightFront, leftBack, rightBack;
-    public double inchesToTravel, encoderCountsPerInch, encoderCountsPer360;
+    public static CANEncoder leftFront, rightFront, leftBack, rightBack;
+    public static double inchesToTravel, encoderCountsPerInch, encoderCountsPer360;
 
     public AutonomousDrive() {
         leftFront = RobotMap.leftFrontEncoder;
@@ -24,7 +24,7 @@ public class AutonomousDrive {
         
       }
 
-    public  void DriveByDistance(double inchesToTravel) {
+    public static void DriveByDistance(double inchesToTravel) {
         leftFront.setPosition(leftFront.getPosition()+(inchesToTravel * encoderCountsPerInch));
         rightFront.setPosition(-(rightFront.getPosition()+(inchesToTravel * encoderCountsPerInch)));
         leftBack.setPosition(leftBack.getPosition()+(inchesToTravel * encoderCountsPerInch));

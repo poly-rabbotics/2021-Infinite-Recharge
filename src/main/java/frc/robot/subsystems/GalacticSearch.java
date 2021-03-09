@@ -7,6 +7,8 @@ import frc.robot.commands.TurnByDegrees;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -28,13 +30,19 @@ private SpeedControllerGroup left,right;
 public DifferentialDrive drive;
 TurnByDegrees turnbydegrees;
 private Ultrasonic ultrasonic;
+public DigitalInput sensor; 
+PWMVictorSPX lowerConveyor,upperConveyor;
 
-boolean coarseAngleFound, fineAngleFound, ballFound, startGalactic, startTurn, cameraCentered;
+
+
+boolean coarseAngleFound, fineAngleFound, ballFound, startGalactic, startTurn, cameraCentered, ballLocated, intakeInProgress, finishedDriving, ballDetected;
 Servo servo;
-int sweepDirection, count;
-double offsetAngle, servoAngle, initialPosition, rotationAngle, distance;
+int sweepDirection, count, ballCount;
+double offsetAngle, servoAngle, initialPosition, rotationAngle, distance, speedLow, speedHigh;
 private static Pixy2 pixy;
 public static int blockCount;
+static int sensorCount;
+
 
 
 public  void initialize() {
@@ -57,6 +65,17 @@ fineAngleFound = false;
 ballFound = false;
 startTurn = false;
 cameraCentered = false;
+ballLocated = false;
+intakeInProgress = false;
+finishedDriving = false;
+ballDetected = false;
+
+
+speedLow = 0.6;
+speedHigh = 0.8;
+ballCount = 0;
+ 
+
 
 sweepDirection = 1;
 initialPosition = 0;
@@ -157,8 +176,11 @@ else if (largestBlock.getY >= -5 && largestBlock.getX <= 5){
 public void modeFour(){
     //distance is determined by ultrasonic
 
-    distance = ultrasonic.getRangeInches();
-    AutonomousDrive.DriveByDistance(distance);
+    double range = ultrasonic.getRangeInches();
+    AutonomousDrive.DriveByDistance(range);
+    if(range <= 0){
+        finishedDriving = true;
+    }
     
 
     
@@ -171,8 +193,61 @@ public void modeFour(){
 
 //Mode 5 intakes the ball
 public void modeFive(){
-     
+    if (isBallFound()){
+        //run intake system
+        lowerConveyor.set(-speedHigh);
+        upperConveyor.set(speedHigh);
+        intakeInProgress = true;
+        ballDetected = true;
+ 
+    }
+   else //stop intake system
+        lowerConveyor.set(0);
+        upperConveyor.set(0);
+        intakeInProgress = false;
+        ballDetected = false;
+ 
+// if ball intake progress and ball not found then ballCount2
+if ((intakeInProgress == true) && (!isBallFound())){
+ 
+    ballCount ++;
+ 
+}else{
+// ball not found and stop intake
+    ballCount = 0;
+   lowerConveyor.set(0);
+   upperConveyor.set(0);
+   intakeInProgress = false;
+    }
+ 
+// if ball count greater than 3 go mode 6
+
 }
+ 
+ 
+public boolean isBallFound(){
+ 
+if (!sensor.get()){
+    sensorCount ++;
+    }
+ 
+    if (sensor.get()){
+        sensorCount = 0;
+ 
+    }
+ 
+    if (sensorCount >= 3){
+        
+    return true;
+ 
+    }
+ 
+     else return false;   
+}
+ 
+ 
+
+
 //mode six drives to the end zone
 public void modeSix(){
 //robot needs to turn towards the end zone 
@@ -216,12 +291,23 @@ if(fineAngleFound){
     modeFour();
     
 }
-count = ConveyorBelt.ballCount;
-if(count >= 3){
+modeFive();
+if( (finishedDriving && !ballDetected ) || ( ballDetected && ballCount < 3) ){
+   ballFound = false;
+   coarseAngleFound = false;
+   startTurn = false;
+   fineAngleFound = false;
+   
+   modeOne();
+}
+
+else if(count >= 3){
     done = true;
+    modeSix();
 }
+
+
 }
-modeSix();
 
 
 }
