@@ -31,7 +31,7 @@ public class AutonomousDrive {
         rightBack.setPosition(-(rightBack.getPosition()+(inchesToTravel * encoderCountsPerInch)));
     }
     
-    public void Turn(double degrees) {
+    public static void Turn(double degrees) {
         leftFront.setPosition(leftFront.getPosition()+(degrees * (encoderCountsPer360/360) ) );
         rightFront.setPosition(-(rightFront.getPosition()+(degrees * (encoderCountsPer360/360) ) ) );
         leftBack.setPosition(leftBack.getPosition()+(degrees * (encoderCountsPer360/360) ) );

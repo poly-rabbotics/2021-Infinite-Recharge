@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.Controls.MechanismsJoystick;
-import frc.robot.commands.TurnByDegrees;
-
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -28,7 +26,6 @@ public class GalacticSearch{
 
 private SpeedControllerGroup left,right;
 public DifferentialDrive drive;
-TurnByDegrees turnbydegrees;
 private Ultrasonic ultrasonic;
 public DigitalInput sensor; 
 PWMVictorSPX lowerConveyor,upperConveyor;
@@ -80,7 +77,6 @@ ballCount = 0;
 sweepDirection = 1;
 initialPosition = 0;
 rotationAngle = 0.0;
-turnbydegrees = new TurnByDegrees();
 servo = RobotMap.pixyServo;
 blockCount = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 25);
 
@@ -147,7 +143,7 @@ public void modeOne(){
     //if servoAngle is less than 0, then turn left
     
     if(!startTurn){
-        turnbydegrees = new TurnByDegrees(rotationAngle, 0.0, "GalacticSearchRotation", 1, false);
+        AutonomousDrive.Turn(rotationAngle);
         startTurn = true;
     }
     servo.setAngle(0);
@@ -158,17 +154,13 @@ public double modeThree(){
 //get pixy offset x in pixels to degrees
 //return the offset 
 servo.setAngle(0);
-int offsetAngle = getBiggestBlock.getAngle(); //stealing from step 1
-if (offsetAngle <= -30 || offsetAngle <= 30){
-    modeOne();
+double offsetAngle = getBiggestBlock().getAngle(); //stealing from step 1
+return offsetAngle;
+/*
+else if (getBiggestBlock().getY() >= -5 && getBiggestBlock().getX() <= 5){
+    modeFour();
 }
-else if (offsetAngle >= -29 && offsetAngle <= 29){
-    int servoAngle = offsetAngle;
-	modeTwo(rotationAngle);
-}
-else if (largestBlock.getY >= -5 && largestBlock.getX <= 5){
-    // Continue to step 4
-}
+*/
 }
 
 
@@ -273,18 +265,25 @@ if(startGalactic){
 if(ballFound && !coarseAngleFound){
 
     modeTwo(servoAngle);
-    if(turnbydegrees.isFinished() ){
-        coarseAngleFound = true;
-        startTurn = false;
-        }
+    coarseAngleFound = true;
+    startTurn = false;
+    
 }
 if(coarseAngleFound && !fineAngleFound){
    double offset = modeThree();
+   if (offsetAngle <= -30 || offsetAngle <= 30){
+    modeOne();
+
+}
+else if (offsetAngle >= -29 && offsetAngle <= 29){
+    double rotationAngle = offsetAngle;
+    modeTwo(rotationAngle);
+
+
+}
    modeTwo(offset);
-   if(turnbydegrees.isFinished() ){
-    fineAngleFound = true;
-    startTurn = false;
-    }
+   fineAngleFound = true;
+   startTurn = false;
 }
 
 if(fineAngleFound){
